@@ -43,23 +43,24 @@ export function sanitizeUsername(username: string): string {
 /**
  * Whether a session should actually attribute its turns right now.
  *
- * The config flag says the feature is *available*; this says it is *useful*.
- * A prefix on a solo thread is pure noise — there is only one person it could
- * be — so attribution stays silent until a session genuinely has more than one
- * participant. `participantCount` is the size of the session allowlist, which
- * starts at 1 (the owner) and grows only on real collaboration events:
- * `!invite`, or another user reviving a paused session.
+ * FORK DIVERGENCE — see FORK_NOTES.md. Upstream also requires
+ * `participantCount > 1`, so a solo thread never carries a prefix. That guard
+ * reads `session.sessionAllowedUsers.size`, a set which grows only via
+ * `!invite` or another user reviving a paused session — while anyone the
+ * platform's global allowlist accepts may write into a thread without ever
+ * entering it (`isAuthorizedForSession`, src/session/authorization.ts). This
+ * deployment has the whole team globally allowed and sharing threads without
+ * `!invite`, so the count stays 1 forever and attribution would never fire.
+ * The decision is therefore the config flag alone.
  *
- * Evaluated per send rather than once at session start, so a thread that
- * becomes shared mid-session starts attributing from that point on. The
- * system-prompt note is emitted whenever the flag is on, precisely so Claude
- * is already primed for a prefix that may only start arriving later.
+ * `participantCount` is still accepted, and ignored, so all six call sites stay
+ * byte-identical to upstream and a rebase conflicts in this file only.
  *
  * Kept as a pure predicate over primitives (not a `Session`) so it stays
  * trivially testable and introduces no import cycle into the session module.
  */
-export function shouldAttribute(enabled: boolean, participantCount: number): boolean {
-  return enabled && participantCount > 1;
+export function shouldAttribute(enabled: boolean, _participantCount: number): boolean {
+  return enabled;
 }
 
 export function formatUserTurn(

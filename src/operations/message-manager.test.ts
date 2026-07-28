@@ -928,6 +928,18 @@ describe('MessageManager', () => {
   });
 
   describe('handleUserMessage attribution', () => {
+    it('prefixes a solo session too — this fork drops the multi-participant gate', async () => {
+      // The sibling tests below add a 'collaborator' to satisfy upstream's
+      // `participantCount > 1` guard. That call is redundant on this fork but
+      // is deliberately left in place to minimise divergence from upstream.
+      // Here the session stays solo (sessionAllowedUsers = {'testuser'}) and
+      // must still be attributed. See FORK_NOTES.md.
+      session.userAttribution = true;
+      await manager.handleUserMessage('deploy it', undefined, 'alice');
+      const sent = (session.claude.sendMessage as any).mock.calls[0][0];
+      expect(sent).toBe('[@alice]: deploy it');
+    });
+
     it('prefixes the sent message with the sender login when the session flag is on', async () => {
       session.userAttribution = true;
       // Attribution only applies once a thread is genuinely shared.

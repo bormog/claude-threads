@@ -47,13 +47,18 @@ describe('sanitizeUsername', () => {
 });
 
 describe('shouldAttribute', () => {
-  it('stays silent in a solo session even when the flag is on', () => {
-    // The whole point of the multi-user gate: a prefix on a one-person thread
-    // names the only person who could have spoken.
-    expect(shouldAttribute(true, 1)).toBe(false);
+  it('attributes in a solo session — this fork drops the multi-participant gate', () => {
+    // Upstream gates on `participantCount > 1`, reading the size of
+    // `sessionAllowedUsers`. That set only grows via `!invite` or a paused
+    // session revived by someone else, while anyone the platform's global
+    // allowlist accepts can write into a thread without ever entering it. On
+    // this deployment the whole team is globally allowed and shares threads
+    // without `!invite`, so the count stays 1 and the guard would silence
+    // attribution permanently. See FORK_NOTES.md.
+    expect(shouldAttribute(true, 1)).toBe(true);
   });
 
-  it('attributes once a session has more than one participant', () => {
+  it('attributes when a session has more than one participant', () => {
     expect(shouldAttribute(true, 2)).toBe(true);
     expect(shouldAttribute(true, 5)).toBe(true);
   });
@@ -64,8 +69,9 @@ describe('shouldAttribute', () => {
     expect(shouldAttribute(false, 99)).toBe(false);
   });
 
-  it('treats a degenerate participant count as solo', () => {
-    // Defensive: an empty allowlist should never produce a prefix.
-    expect(shouldAttribute(true, 0)).toBe(false);
+  it('ignores the participant count entirely', () => {
+    // The count is still accepted so every call site stays byte-identical to
+    // upstream, which keeps rebases cheap; it must not influence the decision.
+    expect(shouldAttribute(true, 0)).toBe(true);
   });
 });
