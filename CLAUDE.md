@@ -111,7 +111,7 @@ workingDir: /home/user/repos/myproject
 chrome: false
 worktreeMode: prompt
 respondOnlyWhenMentioned: false   # New threads only reply when @mentioned (per-thread !mentions overrides)
-userAttribution: true             # Prefix user turns with [@username]: so Claude can tell speakers apart (default on; only applied once a thread has >1 participant)
+userAttribution: true             # Prefix user turns with [@username]: so Claude can tell speakers apart (default on; this fork attributes every user turn — see FORK_NOTES.md)
 
 # Optional: Customize the sticky channel message
 stickyMessage:

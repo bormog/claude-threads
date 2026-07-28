@@ -309,11 +309,11 @@ export interface Session {
   /**
    * When `true`, every genuine user turn sent to Claude is prefixed with the
    * sender's `[@username]:` so Claude can tell who is speaking in a shared
-   * thread (only actually applied once the session has more than one
-   * participant — see `shouldAttribute`). Seeded from `Config.userAttribution`
-   * at session start (default `true`); resumed sessions keep their persisted
-   * value, and sessions persisted before the flag existed read as `false`.
-   * No runtime toggle.
+   * thread. Unlike upstream, this fork applies it to every user turn regardless
+   * of participant count — see `shouldAttribute` and FORK_NOTES.md. Seeded from
+   * `Config.userAttribution` at session start (default `true`); resumed sessions
+   * keep their persisted value, and sessions persisted before the flag existed
+   * read as `false`. No runtime toggle.
    */
   userAttribution: boolean;
 

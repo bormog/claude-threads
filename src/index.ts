@@ -579,7 +579,7 @@ async function startWithoutDaemon() {
     config.limits,  // Resource limits (optional, has sensible defaults)
     config.claudeAccounts,  // Claude account pool (undefined = single-account mode)
     config.respondOnlyWhenMentioned,  // Quiet-mode default for new sessions (#402)
-    config.userAttribution  // Per-message [@username]: attribution (default on; only applied once a thread has >1 participant)
+    config.userAttribution  // Per-message [@username]: attribution (default on; this fork attributes every user turn — see FORK_NOTES.md)
   );
 
   // Set sticky message customization from config
